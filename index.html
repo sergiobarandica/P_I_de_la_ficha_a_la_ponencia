@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Proyecto de investigación transversal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap">
+<style>
+/* Layout: hero con ilustración + índice de estaciones en tarjetas de color; cada estación es una banda con un gráfico propio. Identidad tomada de la bibliografía interactiva del curso. */
+:root{
+  --bg:#FFFDF8; --surface:#FFFFFF; --ink:#263747; --muted:#5B6878; --line:#263747; --soft:#F3EEE2;
+  --yellow:#FFC928; --orange:#FF8500; --red:#FF574A; --pink:#FF3155; --navy:#263747; --green:#1F9D74;
+  --on-color:#263747; --on-dark:#FFFDF8; --shadow:#263747;
+  --display:"Fredoka","Baloo 2","Nunito",system-ui,sans-serif;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141E28; --surface:#1D2B38; --ink:#F4EFE3; --muted:#AEB8C4; --line:#F4EFE3; --soft:#22313F;
+  --navy:#33495D; --on-dark:#FFFDF8; --shadow:#000000; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141E28; --surface:#1D2B38; --ink:#F4EFE3; --muted:#AEB8C4; --line:#F4EFE3; --soft:#22313F;
+  --navy:#33495D; --on-dark:#FFFDF8; --shadow:#000000; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:3px;border-radius:6px}
+.eyebrow{font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red)}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:40px;align-items:center;padding-block:40px 24px}
+.hero-art{background:var(--soft);border:4px solid var(--line);border-radius:50%;aspect-ratio:1;max-width:100%;display:grid;place-items:center;overflow:hidden}
+.hero-art svg{width:92%;height:auto}
+.hero h1{font-size:clamp(2rem,4.6vw,3.3rem);margin-block:10px 14px}
+.hero h1 span{color:var(--orange)}
+.hero .lead{font-family:var(--display);font-weight:600;font-size:1.25rem;margin-bottom:12px}
+.hero .sub{color:var(--muted);max-width:56ch}
+.btn{display:inline-flex;gap:8px;align-items:center;background:var(--navy);color:var(--on-dark);font-weight:800;padding:12px 20px;border-radius:999px;text-decoration:none;margin-top:20px;border:0;font:inherit;font-weight:800;cursor:pointer}
+@media (max-width:760px){.hero{grid-template-columns:1fr;gap:20px}.hero-art{width:min(300px,100%);margin-inline:auto}}
+
+/* INDICE */
+.index-head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-block:28px 16px}
+.index-head h2{font-size:1.9rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.card{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:128px;padding:16px;border:3px solid var(--line);border-radius:16px;box-shadow:4px 4px 0 var(--shadow);text-decoration:none;color:var(--on-color);transition:transform .15s}
+.card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--shadow)}
+.card .num{width:34px;height:34px;border-radius:50%;background:#FFFDF8;border:3px solid #263747;color:#263747;display:grid;place-items:center;font-family:var(--display);font-weight:700}
+.card h3{font-size:1.08rem}
+.card small{font-weight:800;align-self:end}
+.c-yellow{background:var(--yellow)}.c-orange{background:var(--orange)}.c-red{background:var(--red)}.c-pink{background:var(--pink);color:#FFFDF8}.c-navy{background:#263747;color:#FFFDF8}
+
+.chips{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:2px solid var(--soft);margin-top:28px}
+.chips .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:10px}
+.chips a{flex:none;font-weight:700;font-size:.88rem;padding:6px 12px;border:2px solid var(--line);border-radius:999px;text-decoration:none;background:var(--surface)}
+.chips a b{font-family:var(--display);margin-right:4px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+
+/* ESTACIONES */
+section.st{padding-block:36px 8px;scroll-margin-top:60px}
+.st-head{display:flex;align-items:center;gap:14px;padding:16px 20px;border:3px solid var(--line);border-radius:18px;color:var(--on-color);margin-bottom:20px}
+.st-head .num{flex:none;width:48px;height:48px;border-radius:50%;border:3px solid #263747;background:#FFFDF8;color:#263747;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.4rem}
+.st-head h2{font-size:clamp(1.5rem,3vw,2.1rem)}
+.st-head p{font-weight:700;margin-top:2px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:820px){.grid2,.grid3{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:3px solid var(--line);border-radius:16px;padding:18px;min-width:0}
+.panel h3{font-size:1.2rem;margin-bottom:8px}
+.panel p+p{margin-top:8px}
+.cite{font-style:italic;color:var(--muted);font-size:.85rem;margin-top:10px}
+.note{color:var(--muted);font-size:.9rem}
+.fig-cap{font-size:.88rem;color:var(--muted);margin-top:10px}
+svg text{font-family:var(--body)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* donut + escala */
+.donut-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.donut-wrap svg{width:180px;max-width:100%;height:auto;flex:none}
+.legend{display:grid;gap:10px}
+.legend div{display:flex;gap:10px;align-items:flex-start}
+.sw{width:16px;height:16px;border-radius:4px;border:2px solid var(--line);flex:none;margin-top:4px}
+.scale{display:grid;grid-template-columns:30fr 10fr 6fr 4fr;border:3px solid var(--line);border-radius:12px;overflow:hidden;margin-top:12px}
+.scale div{padding:10px 8px;font-weight:800;font-size:.85rem;color:#263747;min-width:0}
+.scale div span{display:block;font-weight:600;font-size:.78rem}
+.ticks{position:relative;display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);margin-top:4px}
+.formula{font-family:var(--display);font-weight:600;font-size:1.05rem;background:var(--soft);border-radius:12px;padding:12px 14px;margin-top:12px}
+
+/* pictograma */
+.picto{display:grid;gap:12px}
+.picto-row{display:grid;grid-template-columns:minmax(0,160px) minmax(0,1fr);gap:12px;align-items:center}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:22px;height:22px;border-radius:6px;border:2px solid var(--line)}
+.picto-row b{font-size:.92rem}
+.picto-row small{display:block;color:var(--muted);font-weight:600}
+
+/* línea de cortes */
+.cortes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:6px}
+.corte{border-top:6px solid var(--line);padding:12px 10px 0 0;position:relative}
+.corte::before{content:"";position:absolute;top:-13px;left:0;width:20px;height:20px;border-radius:50%;background:var(--yellow);border:3px solid var(--line)}
+.corte:last-child::before{background:var(--pink)}
+.corte b{font-family:var(--display);display:block}
+.corte span{font-size:.88rem;color:var(--muted)}
+
+/* toggle */
+.toggle{display:inline-flex;border:3px solid var(--line);border-radius:999px;overflow:hidden;margin-bottom:16px;background:var(--surface)}
+.toggle button{font:inherit;font-weight:800;border:0;background:transparent;color:var(--ink);padding:8px 16px;cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--navy);color:var(--on-dark)}
+
+/* barra de tiempo */
+.timebar{display:flex;border:3px solid var(--line);border-radius:12px;overflow:hidden;min-height:64px}
+.timebar div{padding:8px 6px;font-size:.78rem;font-weight:800;color:#263747;border-right:2px solid #263747;min-width:0;overflow-wrap:anywhere;line-height:1.25}
+.timebar div:last-child{border-right:0}
+.timebar div span{display:block;font-weight:600}
+.tscale{position:relative;height:20px;margin-top:4px;font-size:.75rem;color:var(--muted)}
+.tscale span{position:absolute;transform:translateX(-50%)}
+.tscale span:first-child{transform:none}.tscale span:last-child{transform:translateX(-100%)}
+.compare{width:100%;border-collapse:collapse;font-size:.92rem}
+.compare th,.compare td{text-align:left;padding:8px 10px;border-bottom:2px solid var(--soft);vertical-align:top}
+.compare th{font-family:var(--display);font-weight:600}
+.scroll{overflow-x:auto}
+
+/* barras de peso */
+.wbars{display:grid;gap:8px}
+.wbar{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) 44px;gap:10px;align-items:center;font-size:.9rem}
+.wbar .track{height:18px;background:var(--soft);border-radius:6px;overflow:hidden}
+.wbar .fill{height:100%;border-right:2px solid var(--line)}
+.wbar b{text-align:right}
+@media (max-width:560px){.wbar{grid-template-columns:minmax(0,1fr) 44px}.wbar .track{grid-column:1/-1;order:3}}
+.pair .fill.a{background:var(--orange)}.pair .fill.b{background:var(--pink)}
+.pair .tracks{display:grid;gap:3px}
+.pair .track{height:12px}
+
+/* rúbrica */
+.rubric{display:grid;gap:10px}
+.rubric details{border:3px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.rubric summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 16px;font-weight:800}
+.rubric summary::-webkit-details-marker{display:none}
+.rubric summary .pill{font-family:var(--display);background:var(--yellow);color:#263747;border:2px solid #263747;border-radius:999px;padding:2px 10px;font-size:.9rem}
+.rubric summary::after{content:"+";grid-column:2;grid-row:1;justify-self:end;margin-right:64px;font-family:var(--display);font-size:1.3rem;display:none}
+.levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:3px solid var(--line)}
+.levels div{padding:12px;font-size:.88rem;border-right:2px solid var(--soft);min-width:0}
+.levels div:last-child{border-right:0}
+.levels div b{display:block;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;padding:2px 8px;border-radius:6px;color:#263747;width:max-content;max-width:100%}
+@media (max-width:760px){.levels{grid-template-columns:1fr 1fr}.levels div{border-bottom:2px solid var(--soft)}}
+@media (max-width:420px){.levels{grid-template-columns:1fr}}
+.l1{background:#7FD8B4}.l2{background:var(--yellow)}.l3{background:#FFB766}.l4{background:#FF9AAC}
+
+/* calculadora */
+.calc-list{display:grid;gap:6px}
+.calc-row{display:grid;grid-template-columns:minmax(0,1fr) 48px 78px;gap:8px;align-items:center;font-size:.9rem}
+.calc-row input{width:100%;font:inherit;font-weight:700;padding:6px 8px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);text-align:right}
+.calc-row span{color:var(--muted);text-align:right}
+.calc-total{display:flex;justify-content:space-between;font-family:var(--display);font-weight:600;font-size:1.1rem;border-top:3px solid var(--line);padding-top:10px;margin-top:8px}
+.result{display:grid;gap:14px}
+.big{font-family:var(--display);font-weight:700;font-size:3.4rem;line-height:1}
+.gauge{position:relative;height:30px;border:3px solid var(--line);border-radius:10px;overflow:hidden;display:grid;grid-template-columns:30fr 10fr 6fr 4fr}
+.gauge i{display:block}
+.marker{position:absolute;top:-6px;bottom:-6px;width:6px;background:var(--ink);border-radius:3px;transform:translateX(-50%);transition:left .3s}
+.split{display:flex;height:22px;border:3px solid var(--line);border-radius:8px;overflow:hidden}
+.split div{height:100%}
+.example{display:inline-block;font-size:.78rem;font-weight:800;background:var(--soft);border-radius:6px;padding:2px 8px;margin-bottom:8px}
+.ghost{font:inherit;font-weight:800;background:transparent;color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+
+/* reglas */
+.rules{display:grid;gap:12px}
+.rule{display:grid;grid-template-columns:minmax(0,1fr) 30px minmax(0,1fr);gap:10px;align-items:center}
+.rule .if,.rule .then{border:3px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.9rem;font-weight:700;min-width:0}
+.rule .if{background:var(--surface)}
+.rule .then{background:var(--soft)}
+.rule .then strong{color:var(--pink)}
+.rule svg{width:30px;height:20px}
+@media (max-width:560px){.rule{grid-template-columns:1fr}.rule svg{transform:rotate(90deg);justify-self:center}}
+footer{padding-block:40px;color:var(--muted);font-size:.85rem}
+
+/* elección de modalidad */
+.choose{display:grid;grid-template-columns:minmax(0,170px) 70px minmax(0,1fr);align-items:center;gap:0;margin-bottom:20px}
+.choose-start{background:var(--yellow);color:#263747;border:3px solid var(--line);border-radius:16px;padding:14px;text-align:center;box-shadow:4px 4px 0 var(--shadow)}
+.choose-start b{font-family:var(--display);font-size:1.2rem;display:block}
+.choose-start span{font-size:.85rem;font-weight:700}
+.fork{width:70px;height:100%;min-height:200px;color:var(--line)}
+.opts{display:grid;gap:8px;min-width:0}
+.or{justify-self:start;margin-left:24px;font-family:var(--display);font-weight:700;font-size:1.1rem;background:var(--navy);color:var(--on-dark);border-radius:999px;padding:2px 14px}
+.opt{border:3px solid var(--line);border-radius:16px;padding:14px 16px;background:var(--surface);display:grid;gap:6px;min-width:0}
+.opt .tag{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;width:max-content;padding:2px 8px;border-radius:6px;color:#263747}
+.opt h3{font-size:1.25rem;margin:0}
+.opt p{font-size:.92rem}
+.video{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:center;text-decoration:none;border:2px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--soft);margin-top:4px}
+.video:hover{background:var(--bg)}
+.video .play{width:44px;height:32px;border-radius:8px;background:var(--pink);display:grid;place-items:center}
+.video b{display:block;font-size:.9rem;line-height:1.3}
+.video span{font-size:.8rem;color:var(--muted)}
+.choose-note{font-weight:800;margin-top:4px}
+@media (max-width:700px){.choose{grid-template-columns:1fr}.fork{display:none}.choose-start{margin-bottom:12px}.or{justify-self:center;margin-left:0}}
+.tg-label{font-weight:800;margin-right:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="hero-art">
+      <svg viewBox="0 0 300 300" role="img" aria-label="Ilustración de un grupo de estudiantes presentando su ponencia: una estudiante habla en el atril, un compañero sostiene la ficha de investigación, otra compañera maneja las diapositivas y un reloj marca 15 minutos">
+        <ellipse cx="150" cy="276" rx="120" ry="10" fill="#263747" opacity=".15"/>
+        <!-- pantalla -->
+        <rect x="58" y="30" width="170" height="104" rx="10" fill="#FFFFFF" stroke="#263747" stroke-width="4"/>
+        <rect x="58" y="30" width="170" height="20" rx="10" fill="#263747"/>
+        <rect x="58" y="42" width="170" height="8" fill="#263747"/>
+        <text x="70" y="45" font-size="10" font-weight="800" fill="#FFFDF8">Pregunta de investigación</text>
+        <line x1="76" y1="122" x2="212" y2="122" stroke="#263747" stroke-width="3"/>
+        <rect x="84" y="94" width="20" height="28" fill="#FFC928" stroke="#263747" stroke-width="3"/>
+        <rect x="114" y="78" width="20" height="44" fill="#FF8500" stroke="#263747" stroke-width="3"/>
+        <rect x="144" y="64" width="20" height="58" fill="#FF574A" stroke="#263747" stroke-width="3"/>
+        <circle cx="194" cy="84" r="16" fill="#FFF4CF" stroke="#263747" stroke-width="3"/>
+        <text x="194" y="90" font-size="18" font-weight="800" text-anchor="middle" fill="#263747">?</text>
+        <rect x="140" y="134" width="6" height="18" fill="#263747"/>
+        <!-- reloj -->
+        <circle cx="262" cy="52" r="26" fill="#FFC928" stroke="#263747" stroke-width="4"/>
+        <rect x="256" y="20" width="12" height="8" rx="2" fill="#263747"/>
+        <text x="262" y="58" font-size="15" font-weight="800" text-anchor="middle" fill="#263747">15:00</text>
+        <!-- compañero izquierda con la ficha -->
+        <rect x="26" y="206" width="54" height="66" rx="20" fill="#FF3155" stroke="#263747" stroke-width="4"/>
+        <circle cx="53" cy="186" r="20" fill="#C98A5E" stroke="#263747" stroke-width="4"/>
+        <path d="M33 182 q4 -20 22 -20 q18 0 18 18 q-10 -8 -40 2z" fill="#263747"/>
+        <circle cx="46" cy="188" r="2.5" fill="#263747"/><circle cx="60" cy="188" r="2.5" fill="#263747"/>
+        <path d="M47 196 q6 4 12 0" stroke="#263747" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <rect x="44" y="214" width="46" height="56" rx="4" fill="#FFFFFF" stroke="#263747" stroke-width="3" transform="rotate(-8 67 242)"/>
+        <g transform="rotate(-8 67 242)" stroke="#263747" stroke-width="2.5" stroke-linecap="round">
+          <line x1="52" y1="234" x2="82" y2="234"/><line x1="52" y1="244" x2="78" y2="244"/><line x1="52" y1="254" x2="82" y2="254"/>
+        </g>
+        <text x="66" y="228" font-size="9" font-weight="800" text-anchor="middle" fill="#FF3155" transform="rotate(-8 67 242)">FICHA</text>
+        <!-- ponente detrás del atril -->
+        <rect x="124" y="176" width="56" height="60" rx="18" fill="#FFC928" stroke="#263747" stroke-width="4"/>
+        <circle cx="152" cy="156" r="22" fill="#8D5B3E" stroke="#263747" stroke-width="4"/>
+        <path d="M128 156 q-2 -28 24 -30 q28 0 26 30 q-4 -14 -24 -16 q-18 0 -26 16z" fill="#263747"/>
+        <path d="M128 158 q-8 22 4 34" stroke="#263747" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M176 158 q8 22 -4 34" stroke="#263747" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <circle cx="145" cy="158" r="2.5" fill="#263747"/><circle cx="159" cy="158" r="2.5" fill="#263747"/>
+        <path d="M145 167 q7 6 14 0" stroke="#263747" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M178 190 L206 142" stroke="#263747" stroke-width="10" stroke-linecap="round"/>
+        <path d="M178 190 L206 142" stroke="#FFC928" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="207" cy="139" r="6" fill="#8D5B3E" stroke="#263747" stroke-width="3"/>
+        <!-- atril -->
+        <path d="M112 210 h80 l-10 64 h-60z" fill="#FF8500" stroke="#263747" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="106" y="202" width="92" height="12" rx="4" fill="#263747"/>
+        <path d="M140 202 q-4 -14 2 -22" stroke="#263747" stroke-width="3" fill="none"/>
+        <ellipse cx="143" cy="178" rx="5" ry="7" fill="#263747"/>
+        <text x="152" y="244" font-size="10" font-weight="800" text-anchor="middle" fill="#263747">PONENCIA</text>
+        <!-- compañera derecha con control de diapositivas -->
+        <rect x="222" y="208" width="52" height="64" rx="20" fill="#263747" stroke="#263747" stroke-width="4"/>
+        <circle cx="248" cy="188" r="20" fill="#E3B08A" stroke="#263747" stroke-width="4"/>
+        <path d="M226 190 q-2 -26 22 -24 q24 0 22 24 q-6 -12 -22 -12 q-14 0 -22 12z" fill="#FF8500" stroke="#263747" stroke-width="3"/>
+        <circle cx="241" cy="190" r="2.5" fill="#263747"/><circle cx="255" cy="190" r="2.5" fill="#263747"/>
+        <path d="M242 198 q6 4 12 0" stroke="#263747" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <rect x="212" y="222" width="12" height="20" rx="3" fill="#FFFDF8" stroke="#263747" stroke-width="3"/>
+        <circle cx="218" cy="229" r="2" fill="#FF3155"/>
+      </svg>
+    </div>
+    <div>
+      <p class="eyebrow">Filosofía Institucional · Proyecto transversal</p>
+      <h1>Proyecto de investigación: <span>de la ficha a la ponencia</span></h1>
+      <p class="lead">Cómo se arma, se presenta y se califica</p>
+      <p class="sub">La nota sale por mitades: la ficha de investigación diligenciada y la socialización del proyecto. Para socializar, cada grupo elige una sola opción: ponencia formal o ponencia mini TED. Cada estación explica una parte, con su rúbrica y una calculadora para revisar la nota del grupo.</p>
+      <a class="btn" href="#estaciones">Ver las estaciones <span aria-hidden="true">↓</span></a>
+    </div>
+  </header>
+
+  <div class="index-head" id="estaciones">
+    <h2>Estaciones del proyecto</h2>
+    <p class="note">7 estaciones · toca una para ir</p>
+  </div>
+  <nav class="cards" aria-label="Estaciones">
+    <a class="card c-yellow" href="#s1"><span class="num">1</span><h3>Cómo se califica</h3><small>Explorar →</small></a>
+    <a class="card c-orange" href="#s2"><span class="num">2</span><h3>La ficha de investigación</h3><small>Explorar →</small></a>
+    <a class="card c-red" href="#s3"><span class="num">3</span><h3>Elige cómo socializar</h3><small>Explorar →</small></a>
+    <a class="card c-pink" href="#s4"><span class="num">4</span><h3>Rúbrica de la ficha</h3><small>Explorar →</small></a>
+    <a class="card c-navy" href="#s5"><span class="num">5</span><h3>Rúbrica de la socialización</h3><small>Explorar →</small></a>
+    <a class="card c-yellow" href="#s6"><span class="num">6</span><h3>Calcula la nota del grupo</h3><small>Explorar →</small></a>
+    <a class="card c-orange" href="#s7"><span class="num">7</span><h3>Reglas del proyecto</h3><small>Explorar →</small></a>
+  </nav>
+</div>
+
+<nav class="chips" aria-label="Ir a una estación">
+  <div class="wrap">
+    <a href="#estaciones">↑ Índice</a>
+    <a href="#s1"><b>1</b>Calificación</a><a href="#s2"><b>2</b>Ficha</a><a href="#s3"><b>3</b>Elige cómo socializar</a>
+    <a href="#s4"><b>4</b>Rúbrica ficha</a><a href="#s5"><b>5</b>Rúbrica socialización</a><a href="#s6"><b>6</b>Calculadora</a><a href="#s7"><b>7</b>Reglas</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1 -->
+  <section class="st" id="s1">
+    <div class="st-head c-yellow"><span class="num">1</span><div><h2>Cómo se califica</h2><p>Dos componentes con el mismo peso</p></div></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>La nota final</h3>
+        <div class="donut-wrap">
+          <svg viewBox="0 0 120 120" role="img" aria-label="Gráfico circular: 50 % ficha de investigación y 50 % socialización">
+            <circle cx="60" cy="60" r="42" fill="none" stroke="var(--orange)" stroke-width="22" stroke-dasharray="131.95 263.9" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="42" fill="none" stroke="var(--pink)" stroke-width="22" stroke-dasharray="131.95 263.9" stroke-dashoffset="-131.95" transform="rotate(-90 60 60)"/>
+            <circle cx="60" cy="60" r="53" fill="none" stroke="var(--line)" stroke-width="3"/>
+            <circle cx="60" cy="60" r="31" fill="var(--surface)" stroke="var(--line)" stroke-width="3"/>
+            <line x1="60" y1="7" x2="60" y2="29" stroke="var(--line)" stroke-width="3"/>
+            <line x1="60" y1="91" x2="60" y2="113" stroke="var(--line)" stroke-width="3"/>
+            <text x="60" y="58" text-anchor="middle" font-size="11" font-weight="800" fill="var(--ink)">100 %</text>
+            <text x="60" y="71" text-anchor="middle" font-size="8" fill="var(--muted)">nota final</text>
+          </svg>
+          <div class="legend">
+            <div><span class="sw" style="background:var(--orange)"></span><p><b>50 % · Ficha de investigación.</b> Versión final, diligenciada durante los tres cortes. Se califica con la rúbrica de la estación 4.</p></div>
+            <div><span class="sw" style="background:var(--pink)"></span><p><b>50 % · Socialización.</b> El grupo elige ponencia formal o ponencia mini TED y presenta solo una. Se califica con la rúbrica de la estación 5.</p></div>
+          </div>
+        </div>
+        <p class="formula tnum">Nota final = (ficha × 0,5) + (socialización × 0,5)</p>
+        <p class="fig-cap tnum">Ejemplo: ficha 4,2 y socialización 3,8 dan 2,1 + 1,9 = 4,0.</p>
+      </div>
+      <div class="panel">
+        <h3>La escala de 0,0 a 5,0</h3>
+        <p>Cada criterio recibe una nota según el nivel de desempeño. La nota de cada componente suma esas notas multiplicadas por su peso. Se aprueba con 3,0.</p>
+        <div class="scale" role="img" aria-label="Escala de niveles: Bajo de 0,0 a 2,9; Básico de 3,0 a 3,9; Alto de 4,0 a 4,5; Superior de 4,6 a 5,0">
+          <div class="l4">Bajo<span>0,0–2,9</span></div>
+          <div class="l3">Básico<span>3,0–3,9</span></div>
+          <div class="l2">Alto<span>4,0–4,5</span></div>
+          <div class="l1">Superior<span>4,6–5,0</span></div>
+        </div>
+        <div class="ticks tnum"><span>0,0</span><span style="position:absolute;left:60%;transform:translateX(-50%)">3,0 aprueba</span><span>5,0</span></div>
+        <p class="fig-cap">El ancho de cada franja es proporcional a su rango en la escala.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="st" id="s2">
+    <div class="st-head c-orange"><span class="num">2</span><div><h2>La ficha de investigación</h2><p>Se construye durante el semestre y se entrega en Word</p></div></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Tres cortes, una ficha</h3>
+        <p>El grupo diligencia la ficha por partes, según lo que pida el o la docente en cada corte. La versión del tercer corte es la que se califica.</p>
+        <div class="cortes" style="margin-top:26px">
+          <div class="corte"><b>Corte 1</b><span>Tema, pregunta, población, artículo y palabras clave</span></div>
+          <div class="corte"><b>Corte 2</b><span>Justificación, conceptos, fuentes, entrevista y audiovisual</span></div>
+          <div class="corte"><b>Corte 3</b><span>Conclusiones, reflexión y versión final calificada</span></div>
+        </div>
+        <p class="fig-cap">Distribución sugerida. Ajústala a lo que se haya acordado en clase.</p>
+        <h3 style="margin-top:20px">Condiciones de entrega</h3>
+        <p>Formato Word, sin cambiar el diseño ni borrar secciones. Cada apartado sigue la indicación de su pie de página. Citas y referencias en APA 7.ª edición, con enlace funcional en toda fuente digital. Una fuente sin enlace que funcione no se revisa.</p>
+      </div>
+      <div class="panel">
+        <h3>Lo mínimo que debe tener</h3>
+        <div class="picto" role="img" aria-label="Pictograma de cantidades mínimas por apartado de la ficha">
+          <div class="picto-row"><b>Palabras clave<small>máximo 5</small></b><div class="dots"><i class="dot" style="background:var(--yellow)"></i><i class="dot" style="background:var(--yellow)"></i><i class="dot" style="background:var(--yellow)"></i><i class="dot" style="background:var(--yellow)"></i><i class="dot" style="background:var(--yellow)"></i></div></div>
+          <div class="picto-row"><b>Conceptos fundamentales<small>mínimo 4, con referencia</small></b><div class="dots"><i class="dot" style="background:var(--orange)"></i><i class="dot" style="background:var(--orange)"></i><i class="dot" style="background:var(--orange)"></i><i class="dot" style="background:var(--orange)"></i></div></div>
+          <div class="picto-row"><b>Fuentes académicas escritas<small>mínimo 3</small></b><div class="dots"><i class="dot" style="background:var(--red)"></i><i class="dot" style="background:var(--red)"></i><i class="dot" style="background:var(--red)"></i></div></div>
+          <div class="picto-row"><b>Conclusiones<small>mínimo 4</small></b><div class="dots"><i class="dot" style="background:var(--pink)"></i><i class="dot" style="background:var(--pink)"></i><i class="dot" style="background:var(--pink)"></i><i class="dot" style="background:var(--pink)"></i></div></div>
+          <div class="picto-row"><b>Artículo, entrevista y audiovisual<small>1 de cada uno</small></b><div class="dots"><i class="dot" style="background:var(--green)"></i><i class="dot" style="background:var(--green)"></i><i class="dot" style="background:var(--green)"></i></div></div>
+          <div class="picto-row"><b>Justificación y reflexión<small>1 párrafo argumentado cada una</small></b><div class="dots"><i class="dot" style="background:var(--navy)"></i><i class="dot" style="background:var(--navy)"></i></div></div>
+        </div>
+        <p class="fig-cap">Cada cuadro es un elemento que la ficha debe incluir.</p>
+      </div>
+    </div>
+    <div class="grid3" style="margin-top:20px">
+      <div class="panel"><h3>Fuentes académicas</h3><p>Artículos de revista, libros, capítulos, tesis o informes de investigación. Búscalos en Google Académico, Scielo, Redalyc, Dialnet, Scopus o en repositorios universitarios.</p></div>
+      <div class="panel"><h3>Artículo y audiovisual</h3><p>El artículo viene de un medio reconocido, como El Tiempo, El Espectador, BBC Mundo o El País. El audiovisual es un documental, una película o un cortometraje; los videos de redes sin respaldo académico no sirven.</p></div>
+      <div class="panel"><h3>Conclusiones</h3><p>Responden la pregunta, señalan qué vacíos quedan en lo publicado, proponen soluciones y explican cómo aplicarlas en el contexto real. La técnica es la revisión de fuentes secundarias.</p></div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="st" id="s3">
+    <div class="st-head c-red"><span class="num">3</span><div><h2>Elige cómo socializar</h2><p>Una sola presentación de 15 minutos, en la opción que escoja el grupo</p></div></div>
+    <div class="choose" role="group" aria-label="El grupo elige una sola de las dos opciones">
+      <div class="choose-start"><b>Su grupo</b><span>presenta una sola vez</span></div>
+      <svg class="fork" viewBox="0 0 70 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 H24 C40 100 34 40 66 40 M24 100 C40 100 34 160 66 160" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M58 32 66 40 58 48 M58 152 66 160 58 168" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="opts">
+        <article class="opt">
+          <span class="tag" style="background:var(--orange)">Opción A</span>
+          <h3>Ponencia formal</h3>
+          <p>Exposición académica de 12 minutos con diapositivas y 3 de preguntas. Se califica con la rúbrica 2A.</p>
+          <a class="video" href="https://www.youtube.com/watch?v=LwQcodjFeFA" target="_blank" rel="noopener"><span class="play"><svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><path d="M1 1 13 8 1 15z" fill="#FFFDF8"/></svg></span><span><b>Ejemplo: «El impacto de la inteligencia artificial en el comportamiento estudiantil universitario»</b><span>Ponencia en el V Congreso Científico · Red de Investigadores Latinoamericanos · 9:51 · YouTube ↗</span></span></a>
+        </article>
+        <span class="or" aria-hidden="true">o</span>
+        <article class="opt">
+          <span class="tag" style="background:#FF9AAC">Opción B</span>
+          <h3>Ponencia mini TED</h3>
+          <p>Charla de 10 a 12 minutos centrada en una idea, con narrativa y sustento investigativo, y de 3 a 5 minutos de preguntas. Se califica con la rúbrica 2B.</p>
+          <a class="video" href="https://www.youtube.com/watch?v=9MD_QxqbLy8" target="_blank" rel="noopener"><span class="play"><svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true"><path d="M1 1 13 8 1 15z" fill="#FFFDF8"/></svg></span><span><b>Ejemplo: «Jugar a ser científica», Valentina Avetta</b><span>TEDxSanNicolas · un proyecto científico que nace de un problema personal · 10:19 · YouTube ↗</span></span></a>
+        </article>
+        <p class="choose-note">Los grupos no presentan las dos opciones: escogen una y la inscriben antes de la fecha que fije el docente.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="tg-label">Ver los tiempos de:</span>
+      <div class="toggle" role="group" aria-label="Opción cuyos tiempos se muestran">
+        <button type="button" id="t-formal" aria-pressed="true" data-mode="formal">Ponencia formal</button>
+        <button type="button" id="t-ted" aria-pressed="false" data-mode="ted">Mini TED</button>
+      </div>
+      <h3 id="time-title">Cómo se reparten los 15 minutos de la opción elegida</h3>
+      <div class="timebar" id="timebar" role="img"></div>
+      <div class="tscale tnum"><span style="left:0">0</span><span style="left:33.3%">5</span><span style="left:66.6%">10</span><span style="left:100%">15 min</span></div>
+      <p class="fig-cap" id="time-cap"></p>
+    </div>
+    <div class="grid2" style="margin-top:20px">
+      <div class="panel scroll">
+        <h3>Compara antes de elegir</h3>
+        <table class="compare">
+          <thead><tr><th scope="col"></th><th scope="col">Ponencia formal</th><th scope="col">Mini TED</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Propósito</th><td>Presentar el proceso y los resultados como en un evento académico</td><td>Defender una idea que salió de la investigación</td></tr>
+            <tr><th scope="row">Tono</th><td>Académico y expositivo</td><td>Narrativo y cercano, con el mismo rigor</td></tr>
+            <tr><th scope="row">Diapositivas</th><td>Ideas centrales, esquemas y una diapositiva final de referencias APA</td><td>Pocas: una imagen, una cifra o una frase por pantalla; también vale un objeto o una demostración</td></tr>
+            <tr><th scope="row">Quién habla</th><td>Cada integrante expone una parte</td><td>Uno o varios; si son varios, el relato debe sonar como uno solo</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h3>Control del tiempo</h3>
+        <p>Quien modera muestra avisos a los 10, 12 y 15 minutos. A los 15 se cierra la intervención, haya terminado o no el grupo.</p>
+        <h3 style="margin-top:14px">Antes de presentar</h3>
+        <p>Ensayen con cronómetro. Citen en voz alta a los autores de la ficha («según…»). Lleven el material en USB y en la nube, y lleguen 10 minutos antes. Todo lo que se diga debe estar respaldado en la ficha.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="st" id="s4">
+    <div class="st-head c-pink"><span class="num">4</span><div><h2>Rúbrica de la ficha</h2><p>Nueve criterios que suman 100 %</p></div></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Peso de cada criterio</h3>
+        <div class="wbars" id="wbars-ficha"></div>
+        <p class="fig-cap">Las fuentes académicas pesan el doble que la mayoría de criterios: sostienen el resto de la ficha.</p>
+      </div>
+      <div class="panel">
+        <h3>Cómo leer la rúbrica</h3>
+        <p>Abre un criterio para ver los cuatro niveles. Ubica la ficha en el nivel que mejor la describe y asigna una nota dentro de ese rango.</p>
+        <div class="scale" style="margin-top:14px" aria-hidden="true">
+          <div class="l4">Bajo<span>0,0–2,9</span></div><div class="l3">Básico<span>3,0–3,9</span></div><div class="l2">Alto<span>4,0–4,5</span></div><div class="l1">Superior<span>4,6–5,0</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="rubric" id="rub-ficha" style="margin-top:20px"></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="st" id="s5">
+    <div class="st-head c-navy" style="color:#FFFDF8"><span class="num">5</span><div><h2>Rúbrica de la socialización</h2><p>Al grupo se le aplica solo la rúbrica de la opción que eligió</p></div></div>
+    <div class="panel">
+      <h3>Qué pesa más en cada opción</h3>
+      <div class="legend" style="grid-auto-flow:column;justify-content:start;gap:20px;margin-bottom:12px">
+        <div><span class="sw" style="background:var(--orange)"></span><p>Ponencia formal</p></div>
+        <div><span class="sw" style="background:var(--pink)"></span><p>Mini TED</p></div>
+      </div>
+      <div class="wbars pair" id="wbars-pair"></div>
+      <p class="fig-cap">La ponencia formal premia el dominio conceptual (25 %). La mini TED reparte el peso entre idea, narrativa y sustento (20 % cada uno). Tiempo y preguntas pesan igual en ambas. Cada rúbrica suma 100 % por sí sola.</p>
+    </div>
+    <div style="margin-top:20px">
+      <span class="tg-label">Ver la rúbrica de:</span>
+      <div class="toggle" role="group" aria-label="Rúbrica que se muestra">
+        <button type="button" id="r-formal" aria-pressed="true" data-rub="formal">Ponencia formal</button>
+        <button type="button" id="r-ted" aria-pressed="false" data-rub="ted">Mini TED</button>
+      </div>
+      <div class="rubric" id="rub-soc"></div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="st" id="s6">
+    <div class="st-head c-yellow"><span class="num">6</span><div><h2>Calcula la nota del grupo</h2><p>La planilla de calificación, con el cálculo hecho</p></div></div>
+    <div class="grid2">
+      <div class="panel">
+        <span class="example">Valores de ejemplo · cámbialos</span>
+        <h3>Ficha de investigación</h3>
+        <div class="calc-list" id="calc-ficha"></div>
+        <div class="calc-total tnum"><span>Nota de la ficha</span><span id="tot-ficha">0,0</span></div>
+      </div>
+      <div class="panel">
+        <span class="example">Valores de ejemplo · cámbialos</span>
+        <h3>Socialización</h3>
+        <span class="tg-label">Opción elegida por el grupo:</span>
+        <div class="toggle" role="group" aria-label="Opción elegida por el grupo" style="margin-bottom:10px">
+          <button type="button" id="c-formal" aria-pressed="true" data-calc="formal">Formal</button>
+          <button type="button" id="c-ted" aria-pressed="false" data-calc="ted">Mini TED</button>
+        </div>
+        <div class="calc-list" id="calc-soc"></div>
+        <div class="calc-total tnum"><span>Nota de la socialización</span><span id="tot-soc">0,0</span></div>
+      </div>
+    </div>
+    <div class="panel result" style="margin-top:20px" aria-live="polite">
+      <div style="display:flex;gap:20px;align-items:end;flex-wrap:wrap;justify-content:space-between">
+        <div><p class="note">Nota final del grupo</p><p class="big tnum" id="final">0,0</p></div>
+        <p id="final-level" style="font-family:var(--display);font-weight:600;font-size:1.3rem"></p>
+        <button type="button" class="ghost" id="reset">Volver al ejemplo</button>
+      </div>
+      <div>
+        <div class="gauge" aria-hidden="true"><i class="l4"></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><span class="marker" id="marker"></span></div>
+        <div class="ticks tnum"><span>0,0</span><span style="position:absolute;left:60%;transform:translateX(-50%)">3,0</span><span>5,0</span></div>
+      </div>
+      <div>
+        <p class="note" style="margin-bottom:6px">Aporte de cada componente a la nota final</p>
+        <div class="split" id="split" aria-hidden="true"></div>
+        <p class="fig-cap tnum" id="split-cap"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="st" id="s7">
+    <div class="st-head c-orange"><span class="num">7</span><div><h2>Reglas del proyecto</h2><p>Qué pasa en cada caso</p></div></div>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Si ocurre esto, pasa esto</h3>
+        <div class="rules">
+          <div class="rule"><div class="if">Una fuente digital no tiene enlace funcional</div><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M2 10h22m-7-7 7 7-7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg><div class="then">No se revisa y ese apartado queda en <strong>0,0</strong></div></div>
+          <div class="rule"><div class="if">Un integrante falta a la socialización sin excusa</div><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M2 10h22m-7-7 7 7-7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg><div class="then">Obtiene <strong>0,0</strong> en ese componente</div></div>
+          <div class="rule"><div class="if">Falta con excusa válida</div><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M2 10h22m-7-7 7 7-7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg><div class="then">Se sigue el reglamento institucional</div></div>
+          <div class="rule"><div class="if">Hay copia textual sin citar</div><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M2 10h22m-7-7 7 7-7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg><div class="then">Se sanciona según el reglamento estudiantil</div></div>
+          <div class="rule"><div class="if">El grupo usó inteligencia artificial</div><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M2 10h22m-7-7 7 7-7 7" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/></svg><div class="then">Debe declararlo y citarlo en APA 7</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Nota grupal, ajuste individual</h3>
+        <p>La ficha y la socialización tienen nota de grupo. En la socialización, el criterio de preguntas y trabajo en equipo permite al docente ajustar la nota de cada integrante según su participación.</p>
+        <h3 style="margin-top:14px">Fechas</h3>
+        <p>La modalidad se inscribe antes de la fecha que fije el docente y después no se cambia. Las entregas tardías se rigen por lo acordado en clase y por el reglamento.</p>
+        <p class="cite">Fechas de entrega e inscripción: las define el o la docente del curso.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">Instructivo y rúbrica del proyecto de investigación transversal · Filosofía Institucional · 2026-2. Basado en la Ficha de trabajo. Investigación y análisis de fuentes académicas.</footer>
+
+<script>
+const L=['Superior','Alto','Básico','Bajo'];
+const FICHA=[
+ ['Planteamiento: tema, pregunta y población',10,'Tema delimitado; pregunta abierta, investigable y coherente con el tema; población definida con precisión','Tema y pregunta coherentes; la pregunta o la población necesitan delimitarse mejor','Tema general; pregunta cerrada, ambigua o poco relacionada; población difusa','Falta alguno de los tres elementos o no se relacionan entre sí'],
+ ['Artículo mediático y palabras clave',10,'Artículo actual de un medio reconocido, resumen propio que lo conecta con el problema, APA 7 con enlace y hasta 5 palabras clave precisas','Artículo pertinente y referenciado; el resumen describe pero no conecta con el problema','Medio poco confiable o artículo poco pertinente; resumen superficial; errores APA; más de 5 palabras clave','Sin artículo, sin referencia o con enlace roto; sin palabras clave'],
+ ['Justificación social',10,'Un párrafo que argumenta por qué importa la investigación, a quién afecta el problema y qué cambia, apoyado en lo consultado','Argumenta la importancia; el problema o el respaldo quedan a medias','Opiniones o razones generales sin relación con el entorno','No hay justificación o no corresponde al tema'],
+ ['Conceptos fundamentales',10,'Cuatro o más conceptos centrales, con definiciones breves de autores académicos y referencia APA 7 con enlace','Cuatro conceptos pertinentes; alguna definición imprecisa o error menor de referencia','Menos de cuatro, definiciones de diccionario general o fuentes no académicas','Sin conceptos, sin referencias o con definiciones copiadas sin fuente'],
+ ['Fuentes académicas escritas',20,'Tres o más fuentes de calidad (revistas indexadas, libros, tesis); cada resumen indica objetivo, método y hallazgos ligados a la pregunta; APA 7 y enlaces que funcionan','Tres fuentes pertinentes; los resúmenes describen y se conectan en parte con la pregunta','Menos de tres fuentes académicas o alguna no académica; resúmenes superficiales','Sin fuentes académicas, copia sin citar o enlaces que no funcionan'],
+ ['Entrevista y recurso audiovisual',10,'Experto o experta con formación pertinente, o entrevista publicada confiable, que aporta al problema; audiovisual riguroso con su aplicación en contextos reales','Ambos presentes y pertinentes; el aporte o la aplicación se explican en parte','Falta uno de los dos, el experto no tiene formación pertinente o el video viene de redes sin rigor','No presenta ninguno o no se relacionan con la investigación'],
+ ['Conclusiones',15,'Cuatro o más conclusiones que responden la pregunta, señalan vacíos en lo publicado, proponen soluciones y explican cómo aplicarlas','Cuatro conclusiones coherentes; vacíos o aplicación tratados en parte','Menos de cuatro o resúmenes de fuentes sin análisis ni propuestas','Sin conclusiones o sin relación con la pregunta'],
+ ['Reflexión final y análisis crítico',10,'Reflexión propia que une fuentes, problema y postura del grupo desde la filosofía institucional','Postura clara con poco análisis o pocas fuentes conectadas','Descripción u opinión sin argumentos','No hay reflexión o es copiada'],
+ ['APA 7, enlaces, formato y redacción',5,'Formato original intacto, todo diligenciado, APA 7 correcta, enlaces activos, sin errores de redacción','Formato intacto con errores menores de APA, redacción u ortografía','Errores frecuentes o alguna sección incompleta','Formato alterado, secciones borradas o varios enlaces rotos']
+];
+const FORMAL=[
+ ['Dominio del tema y rigor conceptual',25,'Expone con seguridad, usa bien los conceptos y responde la pregunta sin leer','Buen manejo con imprecisiones menores; lee de vez en cuando','Manejo superficial; confunde conceptos; lee casi todo el tiempo','No domina el tema, lee textualmente o comete errores graves'],
+ ['Estructura y coherencia',20,'Presenta introducción, problema y pregunta, justificación, conceptos, hallazgos, conclusiones y cierre, con transiciones claras','Estructura completa con alguna transición débil o partes desbalanceadas','Omite partes o el orden confunde','Exposición sin hilo conductor'],
+ ['Argumentación y uso de fuentes',15,'Cada idea se apoya en fuentes de la ficha, citadas en voz alta y en las diapositivas','Usa fuentes con frecuencia; algunas afirmaciones quedan sin respaldo','Pocas fuentes; predomina la opinión','No usa fuentes'],
+ ['Expresión oral y lenguaje académico',15,'Voz clara, buen ritmo, vocabulario académico, postura y contacto visual adecuados','Buena expresión con muletillas o nervios ocasionales','El volumen o el ritmo dificultan seguir la exposición; lenguaje informal','Expresión confusa; no se comunica con el público'],
+ ['Apoyo visual',10,'Diapositivas legibles con ideas centrales, esquemas y una diapositiva final de referencias APA 7','Diapositivas adecuadas con exceso de texto en algunas','Diapositivas recargadas, poco legibles o con errores','Sin apoyo visual o con uno que distrae'],
+ ['Manejo del tiempo',5,'12 minutos de exposición, con un margen de un minuto, y partes bien repartidas','Se desvía entre 1 y 2 minutos','Se desvía entre 2 y 3 minutos o deja partes sin desarrollar','Se desvía más de 3 minutos y la intervención se corta'],
+ ['Preguntas y trabajo en equipo',10,'Todos participan por igual y responden con argumentos tomados de la investigación','Todos participan, aunque de forma desigual; respuestas correctas pero breves','Participación muy desigual; respuestas vagas','Algún integrante no participa o no responden']
+];
+const TED=[
+ ['Idea central',20,'Una sola idea clara y memorable, nacida de la pregunta de investigación, que cabe en una frase','Idea clara, poco original o diluida entre ideas secundarias','Varias ideas sin una central','No se identifica una idea central'],
+ ['Narrativa y estructura',20,'Abre con una pregunta, un dato o una anécdota; avanza como relato y cierra con un llamado a la acción','Relato completo con apertura o cierre débiles','Relato lineal, como un informe; sin apertura o sin cierre','Sin estructura; el relato confunde'],
+ ['Sustento investigativo',20,'Integra datos, conceptos y hallazgos de la ficha y cita autores con naturalidad; la emoción no reemplaza la evidencia','Usa fuentes, pero algunas ideas solo se apoyan en la experiencia personal','Poco respaldo; predominan la anécdota y la opinión','Sin sustento investigativo'],
+ ['Comunicación y conexión con el público',15,'Habla sin leer; usa la voz, el cuerpo y el espacio; mantiene la atención','Buena conexión con momentos de lectura o rigidez','Depende de las notas; poca conexión','Lee todo y no conecta con el público'],
+ ['Creatividad y apoyo visual',10,'Pocos recursos y bien escogidos (imagen, cifra, frase, objeto o demostración) que refuerzan la idea','Apoyo adecuado con algo de texto que sobra','Diapositivas de informe, recargadas de texto','Sin apoyo visual o con uno que distrae'],
+ ['Manejo del tiempo',5,'Charla de 10 a 12 minutos con buen ritmo','Se desvía entre 1 y 2 minutos','Se desvía entre 2 y 3 minutos o cierra con prisa','Se desvía más de 3 minutos y la intervención se corta'],
+ ['Preguntas y trabajo en equipo',10,'Las intervenciones forman un solo relato y todos responden con solidez','Relato articulado con transiciones mejorables; respuestas breves','Intervenciones desconectadas; respuestas vagas','Algún integrante no participa o no responden']
+];
+const TIME={
+ formal:{cap:'Ponencia formal: 12 minutos de exposición y 3 de preguntas. Cada bloque es proporcional a su duración.',parts:[['Introducción',1,'#FFF4CF'],['Problema y pregunta',1.5,'#FFC928'],['Justificación y artículo',1.5,'#FFC928'],['Conceptos',2,'#FFB766'],['Hallazgos de las fuentes',3,'#FF8500'],['Conclusiones',2,'#FF9AAC'],['Reflexión',1,'#FF9AAC'],['Preguntas',3,'#7FD8B4']]},
+ ted:{cap:'Mini TED: 10 a 12 minutos de charla y de 3 a 5 de preguntas o conversatorio. Se muestra la versión de 12 + 3.',parts:[['Apertura',1,'#FFF4CF'],['El problema como historia',2.5,'#FFC928'],['La idea con evidencia',5,'#FF8500'],['La propuesta',2,'#FF9AAC'],['Cierre',1.5,'#FF9AAC'],['Preguntas',3,'#7FD8B4']]}
+};
+const fmt=n=>n.toFixed(1).replace('.',',');
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+function renderTime(m){
+  const t=TIME[m], bar=document.getElementById('timebar');
+  bar.innerHTML=t.parts.map(p=>`<div style="flex:${p[1]};background:${p[2]}">${esc(p[0])}<span>${String(p[1]).replace('.',',')} min</span></div>`).join('');
+  bar.setAttribute('aria-label',t.cap);
+  document.getElementById('time-cap').textContent=t.cap;
+}
+function renderRubric(id,data){
+  document.getElementById(id).innerHTML=data.map((c,i)=>`<details${i===0?' open':''}><summary><span>${i+1}. ${esc(c[0])}</span><span class="pill tnum">${c[1]} %</span></summary><div class="levels">${[2,3,4,5].map((k,j)=>`<div><b class="l${j+1}">${L[j]}</b>${esc(c[k])}</div>`).join('')}</div></details>`).join('');
+}
+function renderBars(){
+  const max=25;
+  document.getElementById('wbars-ficha').innerHTML=FICHA.map(c=>`<div class="wbar"><span>${esc(c[0])}</span><div class="track"><div class="fill" style="width:${c[1]/max*100}%;background:var(--pink)"></div></div><b class="tnum">${c[1]} %</b></div>`).join('');
+  const names=['Dominio del tema / Idea central','Estructura / Narrativa','Fuentes / Sustento','Expresión oral / Conexión','Apoyo visual / Creatividad','Manejo del tiempo','Preguntas y equipo'];
+  document.getElementById('wbars-pair').innerHTML=names.map((n,i)=>`<div class="wbar"><span>${n}</span><div class="tracks"><div class="track"><div class="fill a" style="width:${FORMAL[i][1]/max*100}%"></div></div><div class="track"><div class="fill b" style="width:${TED[i][1]/max*100}%"></div></div></div><b class="tnum" style="font-size:.8rem;line-height:1.25">${FORMAL[i][1]} %<br>${TED[i][1]} %</b></div>`).join('');
+}
+
+const EX={ficha:[4.5,4.2,4.0,4.3,4.0,4.5,4.0,4.2,4.5],formal:[3.8,4.0,3.5,3.8,4.2,3.5,3.8],ted:[4.2,4.0,3.6,4.0,4.5,4.0,3.8]};
+let calcMode='formal'; let vals={ficha:EX.ficha.slice(),formal:EX.formal.slice(),ted:EX.ted.slice()};
+function calcRows(id,data,key){
+  document.getElementById(id).innerHTML=data.map((c,i)=>`<label class="calc-row" for="${key}-${i}"><span style="text-align:left;color:var(--ink)">${esc(c[0])}</span><span class="tnum">${c[1]} %</span><input class="tnum" type="number" id="${key}-${i}" min="0" max="5" step="0.1" inputmode="decimal" value="${vals[key][i]}" data-key="${key}" data-i="${i}"></label>`).join('');
+}
+function total(data,key){return data.reduce((s,c,i)=>s+(Math.min(5,Math.max(0,+vals[key][i]||0)))*c[1]/100,0);}
+function update(){
+  const f=total(FICHA,'ficha'), sd=calcMode==='formal'?FORMAL:TED, s=total(sd,calcMode), fin=Math.round((f*.5+s*.5)*10)/10;
+  document.getElementById('tot-ficha').textContent=fmt(f);
+  document.getElementById('tot-soc').textContent=fmt(s);
+  document.getElementById('final').textContent=fmt(fin);
+  const lvl=fin>=4.6?'Superior':fin>=4.0?'Alto':fin>=3.0?'Básico':'Bajo';
+  document.getElementById('final-level').textContent=`Nivel ${lvl} · ${fin>=3?'aprueba':'no aprueba'}`;
+  document.getElementById('marker').style.left=(fin/5*100)+'%';
+  const a=f*.5, b=s*.5;
+  document.getElementById('split').innerHTML=`<div style="width:${a/5*100}%;background:var(--orange)"></div><div style="width:${b/5*100}%;background:var(--pink)"></div>`;
+  document.getElementById('split-cap').textContent=`Ficha ${fmt(f)} × 0,5 = ${a.toFixed(2).replace('.',',')} · Socialización ${fmt(s)} × 0,5 = ${b.toFixed(2).replace('.',',')} · El resto de la barra es lo que falta para 5,0.`;
+}
+document.addEventListener('input',e=>{const k=e.target.dataset.key; if(k){vals[k][+e.target.dataset.i]=e.target.value; update();}});
+function setPressed(ids,active){ids.forEach(id=>{const b=document.getElementById(id); b.setAttribute('aria-pressed',String(id===active));});}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.mode){setPressed(['t-formal','t-ted'],b.id); renderTime(b.dataset.mode);}
+  if(b.dataset.rub){setPressed(['r-formal','r-ted'],b.id); renderRubric('rub-soc',b.dataset.rub==='formal'?FORMAL:TED);}
+  if(b.dataset.calc){setPressed(['c-formal','c-ted'],b.id); calcMode=b.dataset.calc; calcRows('calc-soc',calcMode==='formal'?FORMAL:TED,calcMode); update();}
+  if(b.id==='reset'){vals={ficha:EX.ficha.slice(),formal:EX.formal.slice(),ted:EX.ted.slice()}; calcRows('calc-ficha',FICHA,'ficha'); calcRows('calc-soc',calcMode==='formal'?FORMAL:TED,calcMode); update();}
+});
+renderTime('formal'); renderRubric('rub-ficha',FICHA); renderRubric('rub-soc',FORMAL); renderBars();
+calcRows('calc-ficha',FICHA,'ficha'); calcRows('calc-soc',FORMAL,'formal'); update();
+</script>
+
+</body>
+</html>
